@@ -1,12 +1,14 @@
 (defn take-vals
   "Implement take function"
-  [nums x]
-  (loop [res [] cnt 0]
-    (if (or (= cnt x) (= (count nums) 0))
+  [x nums]
+  (loop [nums1 nums res [] cnt 0]
+    (if (>= cnt (count nums))
        res
-       (recur (conj res (get nums cnt)) (inc cnt)))))
+       (if (>= cnt x)
+         (recur (rest nums1) res (inc cnt))
+         (recur (rest nums1) (conj res (first nums1)) (inc cnt))))))
 
-(take-vals [1 2 3 4 5 6] 3)
-(take-vals [-1 -2 -3 0 1 2 3] 4)
-(take-vals [] 2)
+(take-vals 3 [1 2 3 4 5 6])
+(take-vals 4 [-1 -2 -3 0 1 2 3])
+(take-vals 2 [])
 
