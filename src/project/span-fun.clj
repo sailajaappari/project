@@ -19,11 +19,14 @@
 
 
 (defn span2
-  [vals]
+  [f vals]
   (letfn [(take-while-fun [vals1]
-            (take-while (partial = (first (vec vals1))) (vec vals1)))
+            (take-while f (vec vals1)))
           (drop-while-fun [vals1]
-            (drop-while (partial = (first (vec vals1))) (vec vals1)))]
+            (drop-while f (vec vals1)))]
          [(take-while-fun vals) (drop-while-fun vals)]))
-(span2 '(1 1 2 3 3))
-(span2 '(a a a b c c d d))
+(def l '(1 1 2 3 3))
+(span2 (partial = (first l)) l)
+(def ls '(a a a b c c d d))
+(span2 (partial = (first ls)) ls) 
+(span2 odd? [1 3 2 4 5])
