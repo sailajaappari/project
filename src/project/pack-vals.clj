@@ -1,31 +1,61 @@
-(defn span
-  "Split the list into two sublists with pred"
-  [vals1]
-  (letfn [(take-while-fun [vals]
-            (take-while (partial = (first (vec vals))) (vec vals)))
-          (drop-while-fun [vals]
-            (drop-while (partial = (first (vec vals))) (vec vals)))]
-         [(take-while-fun vals1) (drop-while-fun vals1)]))
-(defn pack 
-  "Pack consecutive duplicates of list elements into sublists"
-  [nums]
-  (loop [nums1 nums
-         res []]
-        (if (= (count nums1) 0)
-           res
-           (recur (apply concat (rest (span nums1))) (conj res (first (span nums1)))))))
+(defn drop-false-case
+   [f1 nums2]
+   (loop [vals nums2
+          res []]
+     (if (= (count vals) 0) 
+        (apply concat (list res)) 
+        (if (not  (f1 (first vals)))
+          (recur (rest vals) res)
+          (apply concat (apply concat (list (conj res vals))))))))
 
-(pack '(a a a a b c c a a d e e e))
+
+(defn take-false-case
+   [f1 nums2]
+   
+   (loop [vals nums2
+          res []]
+     (if (= (count vals) 0)
+        (apply concat (list res ))
+        (if (f1 (first vals)) 
+          (apply concat (list res))
+          (recur (rest vals) (conj res (first vals)))))))
+(defn pack
+   "Pack consecutive duplicates of list elements into sublist"
+   [f nums]
+   (if (empty? nums)
+     []
+     (loop [nums1 nums
+            res []]
+        (if (= (count nums1) 0)
+          res
+          (if (f (first nums1))
+            (recur (drop-while f nums1) (conj res (take-while f nums1)))
+            (recur (drop-false-case f nums1) (conj res (take-false-case f nums1))))))))
+(pack even? [1 3 5 2 3 4])
+(pack odd? [1 2 3 4 5])
+(pack odd? [2 4 1 3 5 6 7])
+
+
 (defn unique
   "Eliminate consecutive duplicates of list"
-   [ls]
-   (map first (pack ls)))
-(unique '(a a a b c c a a d e e e e))
-
+   [f lst]
+   (map first (pack f lst)))
+(unique odd? [1 1 3 2 4 5])
+(unique odd? [1 3 5 2 3 4])
 
 
 (defn compress
-  "consecutive duplicates of elements are encoded as lists (n e) n is no.of duplicates of the element e"
-  [vals]
-  (map #(list (count %) (first %)) (pack vals)))
-(compress '(a a a b c c a d d e e e e))
+  [f lst]
+  (map #(list (count %) (first %)) (pack f lst)))
+(compress odd? [1 3 5 2 3 4])
+(compress even? [1 2 4 6 3 4 5 7])
+
+ 
+
+
+
+
+
+
+
+
